@@ -15,6 +15,7 @@ format:
 	isort .
 
 run:
+	source setenv.sh
 	fastapi run app/main.py --reload
 
 setup-local: install-local format

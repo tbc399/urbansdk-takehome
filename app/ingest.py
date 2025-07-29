@@ -1,4 +1,5 @@
 import sys
+
 import pandas as pd
 
 
@@ -22,7 +23,8 @@ def ingest(links_file, speeds_file):
         return -1
 
     print(links_df.head())
-    print(speeds_df.head())
+    links_df.
+    #print(speeds_df.head())
 
 
 if __name__ == "__main__":
@@ -40,4 +42,3 @@ if __name__ == "__main__":
 
     code = ingest(links_path, speeds_path)
     exit(code)
-

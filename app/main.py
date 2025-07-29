@@ -1,9 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import APIRouter, FastAPI
-
 from api.aggregates import router as aggregates_router
 from api.patterns import router as patterns_router
+from fastapi import APIRouter, FastAPI
 
 
 async def startup():
