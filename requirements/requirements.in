@@ -5,3 +5,4 @@ sqlalchemy
 pandas
 fastparquet
 GeoAlchemy2
+psycopg[binary]

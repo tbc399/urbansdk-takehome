@@ -80,6 +80,10 @@ pandas==2.3.1
     # via
     #   -r requirements/requirements.in
     #   fastparquet
+psycopg[binary]==3.2.9
+    # via -r requirements/requirements.in
+psycopg-binary==3.2.9
+    # via psycopg
 pydantic[email]==2.11.7
     # via
     #   -r requirements/requirements.in

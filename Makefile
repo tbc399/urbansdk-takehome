@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 requirements/requirements.txt: requirements/requirements.in
 	pip-compile requirements/requirements.in
 
@@ -17,6 +19,19 @@ format:
 run:
 	source setenv.sh
 	fastapi run app/main.py --reload
+
+load-data:
+	source setenv.sh
+	python app/db.py load ../link_info.parquet.gz ../duval_jan1_2024.parquet.gz
+
+create-tables:
+	source setenv.sh
+	python app/db.py create
+
+drop-tables:
+	source setenv.sh
+	python app/db.py drop
+
 
 setup-local: install-local format
 	

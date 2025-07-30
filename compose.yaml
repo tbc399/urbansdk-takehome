@@ -8,8 +8,15 @@ services:
     environment:
       POSTGRES_DB: geo_db
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ${PG_PASS}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - postgis_data:/var/lib/postgresql/data
+      - postgis_geo:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d geo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 volumes:
-  postgis_data:   
+  postgis_geo:   

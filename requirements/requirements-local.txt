@@ -132,6 +132,12 @@ platformdirs==4.3.8
     # via black
 pluggy==1.6.0
     # via pytest
+psycopg[binary]==3.2.9
+    # via -r /home/traviscammack/dev/urbansdk/takehome/requirements/requirements.txt
+psycopg-binary==3.2.9
+    # via
+    #   -r /home/traviscammack/dev/urbansdk/takehome/requirements/requirements.txt
+    #   psycopg
 pydantic[email]==2.11.7
     # via
     #   -r /home/traviscammack/dev/urbansdk/takehome/requirements/requirements.txt
