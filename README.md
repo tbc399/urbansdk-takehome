@@ -92,6 +92,7 @@ make run
 ----
 
 
+```mermaid
 config:
   layout: fixed
 ---
@@ -131,6 +132,7 @@ flowchart TB
     classDef model fill:#f3e5f5
     classDef infrastructure fill:#e8f5e8
     classDef external fill:#fff3e0
+```
 
 
 ### Sudmission Notes
