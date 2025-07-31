@@ -172,8 +172,8 @@ graph TB
     class LinkModel,SpeedRecordModel model
     class ORM,Database,DataLoader,LoadDB,FetchCDN infrastructure
     class Client,CDN,LocalCache external
-    class CacheCheck decision```
-
+    class CacheCheck decision
+```
 
 ### Sudmission Notes
 ----
