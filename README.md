@@ -2,21 +2,20 @@
 
 TODO:
 - [x] fetch data files from cdn
-- [ ] move logic from views to service layer
-- [ ] clean up any commented out code and todos
+- [x] move logic from views to service layer
+- [X] clean up any commented out code and todos
 - [x] split up models into db models and view models
-- [ ] check project structure
+- [x] check project structure
 - [x] convert periods and days of week back to strings in response
 - [x] move db management script to the top level, and maybe wrap it in a shell script
 - [x] split out config to multiple files
 - [x] make sql async
 - [x] fix spatial filter. Not getting any results
-- [ ] set instructions for how to run everything in readme
+- [x] set instructions for how to run everything in readme
 - [ ] review spec doc to make sure not missing anything
-- [ ] make some notes in the final readme about what could be done differently/better
-- [ ] fix the slow link query
-    - moving logic out of the views
-
+- [x] make some notes in the final readme about what could be done differently/better
+- [x] fix the slow link query
+- [ ] make sure everything runs one last time. Start from nothing and go through readme
 
 -----------------
 
@@ -51,7 +50,7 @@ file at the root.
 docker compose up -d
 ```
 
-### Database
+Database
 ----
 At the root of the project there is a `managedb.py` script for basic management of the db tables and data loading.
 
@@ -75,108 +74,27 @@ and cache them locally in a directory called `data/` for subsequesnt database lo
 make load-data
 ```
 
-### Running the Server
+Running the Server
 ----
 The server can be started with the `run` target
 ```bash
 make run
 ```
 
-### Extras
+Extras
 ----
 - if any changes to the requirements.txt file are needed, add them in requirements.in file and run `make install` again
 - `make uninstall` will uninstall all dependenices (event pip-tools, so you'll have to reinstall it)
 - `make format` will run black and isort against the code to format it
 
-### Architecture
+Architecture
 ----
 
+![Architecture Diagram ](arch.svg)
 
-```mermaid
-graph TB
-    %% External clients and data sources
-    Client[Client Applications]
-    CDN[CDN/Remote Data Source]
-    LocalCache[Local Disk Cache]
-    
-    %% Server layers
-    subgraph Server["API Web Server"]
-        subgraph ResourceLayer["Resource Layer"]
-            AggregatesAPI[aggregates/ endpoint]
-            PatternsAPI[patterns/ endpoint]
-        end
-        
-        subgraph ServiceLayer["Service Layer"]
-            AggregatesService[Aggregates Service]
-            PatternsService[Patterns Service]
-        end
-        
-        subgraph ModelsLayer["Models Layer"]
-            LinkModel[Link Model]
-            SpeedRecordModel[SpeedRecord Model]
-        end
-        
-        subgraph ORMLayer["ORM Layer"]
-            ORM[ORM]
-        end
-    end
-    
-    %% Database
-    Database[(Database)]
-    
-    %% Data loading flow chart
-    subgraph DataFlow["Data Loading Process"]
-        DataLoader[Data Loader<br/>managedb.py]
-        CacheCheck{Check Local<br/>Disk Cache}
-        FetchCDN[Fetch from CDN]
-        LoadDB[Load to Database]
-    end
-    
-    %% Client interactions
-    Client --> AggregatesAPI
-    Client --> PatternsAPI
-    
-    %% Resource to service layer
-    AggregatesAPI --> AggregatesService
-    PatternsAPI --> PatternsService
-    
-    %% Service to models relationships
-    AggregatesService --> LinkModel
-    AggregatesService --> SpeedRecordModel
-    PatternsService --> LinkModel
-    PatternsService --> SpeedRecordModel
-    
-    %% Models to ORM to database
-    LinkModel --> ORM
-    SpeedRecordModel --> ORM
-    ORM --> Database
-    
-    %% Data loading decision flow
-    DataLoader --> CacheCheck
-    CacheCheck -->|Cache Hit| LoadDB
-    CacheCheck -->|Cache Miss| FetchCDN
-    FetchCDN --> LocalCache
-    FetchCDN --> LoadDB
-    LoadDB --> Database
-    
-    %% Styling for dark background
-    classDef apiEndpoint fill:#2196F3,stroke:#1976D2,stroke-width:2px,color:#ffffff
-    classDef service fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#ffffff
-    classDef model fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#ffffff
-    classDef infrastructure fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:#ffffff
-    classDef external fill:#607D8B,stroke:#455A64,stroke-width:2px,color:#ffffff
-    classDef decision fill:#F44336,stroke:#D32F2F,stroke-width:2px,color:#ffffff
-    
-    class AggregatesAPI,PatternsAPI apiEndpoint
-    class AggregatesService,PatternsService service
-    class LinkModel,SpeedRecordModel model
-    class ORM,Database,DataLoader,LoadDB,FetchCDN infrastructure
-    class Client,CDN,LocalCache external
-    class CacheCheck decision
-```
-
-### Sudmission Notes
+Sudmission Notes
 ----
 - I was unable to get the jupyter notebook to function properly. I think there was a versioning issue.
 It was already the 11th hour and I was too far in to turn back, so unfortunately I wasn't able to make any nice visuals.
-
+- In a project with more business logic and more complex relationships it would probably make sense to pull out 
+some sort of service layer, but here the logic is just querying so I left it in the api layer.

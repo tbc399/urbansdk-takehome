@@ -73,7 +73,12 @@ async def get_detail(
 async def spatial_filter(filter: SpatialFilterRequest, session: DbSession):
     polygon = shapely.box(*filter.bbox)
     statement = (
-        select(Link.id.label("link_id"), Link.road_name, Link.length)
+        select(
+            Link.id.label("link_id"),
+            Link.road_name,
+            Link.length,
+            functions.ST_AsGeoJSON(Link.geometry).label("geometry"),
+        )
         .join(Link.speeds)
         .where(SpeedRecord.day_of_week == filter.day.order)
         .where(SpeedRecord.period == filter.period.order)

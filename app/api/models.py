@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -68,3 +68,4 @@ class LinkResponse(BaseModel):
     link_id: int
     road_name: Optional[str] = Field(default=None)
     length: float
+    geometry: str

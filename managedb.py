@@ -84,7 +84,6 @@ def _fetch_data():
 
 
 def load_data():
-    #  TODO: change this so that it downloads data from the cdn and caches it
     import os
 
     import pandas as pd
