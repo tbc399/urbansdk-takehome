@@ -1,13 +1,12 @@
+.PHONY: install-local uninstall format run load-data create-tables drop-tables setup-local
+
 SHELL := /bin/bash
 
-requirements/requirements.txt: requirements/requirements.in
-	pip-compile requirements/requirements.in
+requirements.txt: requirements.in
+	pip-compile requirements.in
 
-requirements/requirements-local.txt: requirements/requirements-local.in requirements/requirements.txt
-	pip-compile requirements/requirements-local.in
-
-install-local: requirements/requirements-local.txt
-	pip install -r requirements/requirements-local.txt
+install: requirements.txt
+	pip install -r requirements.txt
 
 uninstall:
 	pip freeze | xargs pip uninstall -y
@@ -17,21 +16,17 @@ format:
 	isort .
 
 run:
-	source setenv.sh
-	fastapi run app/main.py --reload
+	source setenv.sh && fastapi run app/main.py --reload
 
 load-data:
-	source setenv.sh
-	python app/db.py load ../link_info.parquet.gz ../duval_jan1_2024.parquet.gz
+	source setenv.sh && python managedb.py load-data
 
 create-tables:
-	source setenv.sh
-	python app/db.py create
+	source setenv.sh && python managedb.py create-tables
 
 drop-tables:
-	source setenv.sh
-	python app/db.py drop
+	source setenv.sh && python managedb.py drop-tables
 
 
-setup-local: install-local format
+setup-local: install format
 	

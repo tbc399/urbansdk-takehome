@@ -5,4 +5,9 @@ sqlalchemy
 pandas
 fastparquet
 GeoAlchemy2
+shapely
 psycopg[binary]
+asyncpg
+black
+isort
+notebook
