@@ -14,14 +14,13 @@ TODO:
 - [ ] set instructions for how to run everything in readme
 - [ ] review spec doc to make sure not missing anything
 - [ ] make some notes in the final readme about what could be done differently/better
+- [ ] fix the slow link query
     - moving logic out of the views
-    - potentially more robust typing on models
-    - tests
 
 
 -----------------
 
-### Setup
+Setup
 -----
 
 #### Python
@@ -29,7 +28,7 @@ Setup a python virtual environment. For this project I'm running Python 3.12 and
 pip-compile is also needed (`pip install pip-tools`) for good measure when installing dependencies.
 
 #### Environment
-Some environment variables are needed when running db commands or the server. Create a `.env` file 
+Some environment variables are needed when running db commands, running the server or starting docker. Create a `.env` file 
 similar to this.
 ```dotenv
 DB_PASS=password
@@ -91,6 +90,48 @@ make run
 
 ### Architecture
 ----
+
+
+config:
+  layout: fixed
+---
+flowchart TB
+ subgraph ResourceLayer["Resource Layer"]
+        AggregatesAPI["aggregates/ endpoint"]
+        PatternsAPI["patterns/ endpoint"]
+  end
+ subgraph ModelsLayer["Models Layer"]
+        LinkModel["Link Model"]
+        SpeedRecordModel["SpeedRecord Model"]
+  end
+ subgraph Server["API Web Server"]
+        ResourceLayer
+        ModelsLayer
+  end
+    Client["Client Applications"] --> AggregatesAPI & PatternsAPI
+    AggregatesAPI --> LinkModel & SpeedRecordModel
+    PatternsAPI --> LinkModel & SpeedRecordModel
+    LinkModel --> ORM["ORM Layer"]
+    SpeedRecordModel --> ORM
+    ORM --> Database[("Database")]
+    DataLoader["Data Loader<br>managedb.py"] --> LocalCache["Local Disk Cache"] & CDN["CDN/Remote Data Source"] & Database
+    LocalCache -. Cache Hit .-> DataLoader
+    CDN -. Cache Miss .-> DataLoader
+     Client:::external
+     CDN:::external
+     LocalCache:::external
+     DataLoader:::infrastructure
+     AggregatesAPI:::apiEndpoint
+     PatternsAPI:::apiEndpoint
+     LinkModel:::model
+     SpeedRecordModel:::model
+     ORM:::infrastructure
+     Database:::infrastructure
+    classDef apiEndpoint fill:#e1f5fe
+    classDef model fill:#f3e5f5
+    classDef infrastructure fill:#e8f5e8
+    classDef external fill:#fff3e0
+
 
 ### Sudmission Notes
 ----
