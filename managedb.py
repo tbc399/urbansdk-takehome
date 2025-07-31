@@ -91,15 +91,6 @@ def load_data():
 
     from app.db.models import Link, SpeedRecord
 
-    print("loading data...")
-
-    # if not os.path.exists(args.links_file):
-    #    print(f"links file not found: {args.links_file}")
-    #    sys.exit(-1)
-    # if not os.path.exists(args.speeds_file):
-    #    print(f"speeds file not found: {args.speeds_file}")
-    #    sys.exit(-1)
-
     if not (os.path.exists(_links_path) and os.path.exists(_speeds_path)):
         _fetch_data()
 

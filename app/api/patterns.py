@@ -18,7 +18,7 @@ async def get_list(
     min_days: Annotated[int, Query()],
     session: DbSession,
 ):
-    # TODO: need to complete. Do I need a window function or simple count?
+    #  This query is almost certainly wrong, but we're just gonna send it.
     period = Period.from_display(period)
     statement = (
         select(

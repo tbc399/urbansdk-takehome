@@ -11,3 +11,4 @@ asyncpg
 black
 isort
 notebook
+mapboxgl

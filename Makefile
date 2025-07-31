@@ -1,4 +1,4 @@
-.PHONY: install-local uninstall format run load-data create-tables drop-tables setup-local
+.PHONY: install-local uninstall format run load-data create-tables drop-tables
 
 SHELL := /bin/bash
 
@@ -27,6 +27,3 @@ create-tables:
 drop-tables:
 	source setenv.sh && python managedb.py drop-tables
 
-
-setup-local: install format
-	
