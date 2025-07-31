@@ -99,9 +99,6 @@ graph TB
     CDN[CDN/Remote Data Source]
     LocalCache[Local Disk Cache]
     
-    %% Data loading component
-    DataLoader[Data Loader<br/>managedb.py]
-    
     %% Server layers
     subgraph Server["API Web Server"]
         subgraph ResourceLayer["Resource Layer"]
@@ -109,51 +106,73 @@ graph TB
             PatternsAPI[patterns/ endpoint]
         end
         
+        subgraph ServiceLayer["Service Layer"]
+            AggregatesService[Aggregates Service]
+            PatternsService[Patterns Service]
+        end
+        
         subgraph ModelsLayer["Models Layer"]
             LinkModel[Link Model]
             SpeedRecordModel[SpeedRecord Model]
         end
+        
+        subgraph ORMLayer["ORM Layer"]
+            ORM[ORM]
+        end
     end
     
-    %% Database and ORM
-    ORM[ORM Layer]
+    %% Database
     Database[(Database)]
+    
+    %% Data loading flow chart
+    subgraph DataFlow["Data Loading Process"]
+        DataLoader[Data Loader<br/>managedb.py]
+        CacheCheck{Check Local<br/>Disk Cache}
+        FetchCDN[Fetch from CDN]
+        LoadDB[Load to Database]
+    end
     
     %% Client interactions
     Client --> AggregatesAPI
     Client --> PatternsAPI
     
-    %% API to models relationships
-    AggregatesAPI --> LinkModel
-    AggregatesAPI --> SpeedRecordModel
-    PatternsAPI --> LinkModel
-    PatternsAPI --> SpeedRecordModel
+    %% Resource to service layer
+    AggregatesAPI --> AggregatesService
+    PatternsAPI --> PatternsService
     
-    %% Models to database
+    %% Service to models relationships
+    AggregatesService --> LinkModel
+    AggregatesService --> SpeedRecordModel
+    PatternsService --> LinkModel
+    PatternsService --> SpeedRecordModel
+    
+    %% Models to ORM to database
     LinkModel --> ORM
     SpeedRecordModel --> ORM
     ORM --> Database
     
-    %% Data loading flow
-    DataLoader --> LocalCache
-    DataLoader --> CDN
-    DataLoader --> Database
+    %% Data loading decision flow
+    DataLoader --> CacheCheck
+    CacheCheck -->|Cache Hit| LoadDB
+    CacheCheck -->|Cache Miss| FetchCDN
+    FetchCDN --> LocalCache
+    FetchCDN --> LoadDB
+    LoadDB --> Database
     
-    %% Decision flow for data loader
-    LocalCache -.->|"Cache Hit"| DataLoader
-    CDN -.->|"Cache Miss"| DataLoader
-    
-    %% Styling
-    classDef apiEndpoint fill:#e1f5fe
-    classDef model fill:#f3e5f5
-    classDef infrastructure fill:#e8f5e8
-    classDef external fill:#fff3e0
+    %% Styling for dark background
+    classDef apiEndpoint fill:#2196F3,stroke:#1976D2,stroke-width:2px,color:#ffffff
+    classDef service fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#ffffff
+    classDef model fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#ffffff
+    classDef infrastructure fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:#ffffff
+    classDef external fill:#607D8B,stroke:#455A64,stroke-width:2px,color:#ffffff
+    classDef decision fill:#F44336,stroke:#D32F2F,stroke-width:2px,color:#ffffff
     
     class AggregatesAPI,PatternsAPI apiEndpoint
+    class AggregatesService,PatternsService service
     class LinkModel,SpeedRecordModel model
-    class ORM,Database,DataLoader infrastructure
+    class ORM,Database,DataLoader,LoadDB,FetchCDN infrastructure
     class Client,CDN,LocalCache external
-```
+    class CacheCheck decision```
 
 
 ### Sudmission Notes
