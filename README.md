@@ -93,45 +93,66 @@ make run
 
 
 ```mermaid
-config:
-  layout: fixed
----
-flowchart TB
- subgraph ResourceLayer["Resource Layer"]
-        AggregatesAPI["aggregates/ endpoint"]
-        PatternsAPI["patterns/ endpoint"]
-  end
- subgraph ModelsLayer["Models Layer"]
-        LinkModel["Link Model"]
-        SpeedRecordModel["SpeedRecord Model"]
-  end
- subgraph Server["API Web Server"]
-        ResourceLayer
-        ModelsLayer
-  end
-    Client["Client Applications"] --> AggregatesAPI & PatternsAPI
-    AggregatesAPI --> LinkModel & SpeedRecordModel
-    PatternsAPI --> LinkModel & SpeedRecordModel
-    LinkModel --> ORM["ORM Layer"]
+graph TB
+    %% External clients and data sources
+    Client[Client Applications]
+    CDN[CDN/Remote Data Source]
+    LocalCache[Local Disk Cache]
+    
+    %% Data loading component
+    DataLoader[Data Loader<br/>managedb.py]
+    
+    %% Server layers
+    subgraph Server["API Web Server"]
+        subgraph ResourceLayer["Resource Layer"]
+            AggregatesAPI[aggregates/ endpoint]
+            PatternsAPI[patterns/ endpoint]
+        end
+        
+        subgraph ModelsLayer["Models Layer"]
+            LinkModel[Link Model]
+            SpeedRecordModel[SpeedRecord Model]
+        end
+    end
+    
+    %% Database and ORM
+    ORM[ORM Layer]
+    Database[(Database)]
+    
+    %% Client interactions
+    Client --> AggregatesAPI
+    Client --> PatternsAPI
+    
+    %% API to models relationships
+    AggregatesAPI --> LinkModel
+    AggregatesAPI --> SpeedRecordModel
+    PatternsAPI --> LinkModel
+    PatternsAPI --> SpeedRecordModel
+    
+    %% Models to database
+    LinkModel --> ORM
     SpeedRecordModel --> ORM
-    ORM --> Database[("Database")]
-    DataLoader["Data Loader<br>managedb.py"] --> LocalCache["Local Disk Cache"] & CDN["CDN/Remote Data Source"] & Database
-    LocalCache -. Cache Hit .-> DataLoader
-    CDN -. Cache Miss .-> DataLoader
-     Client:::external
-     CDN:::external
-     LocalCache:::external
-     DataLoader:::infrastructure
-     AggregatesAPI:::apiEndpoint
-     PatternsAPI:::apiEndpoint
-     LinkModel:::model
-     SpeedRecordModel:::model
-     ORM:::infrastructure
-     Database:::infrastructure
+    ORM --> Database
+    
+    %% Data loading flow
+    DataLoader --> LocalCache
+    DataLoader --> CDN
+    DataLoader --> Database
+    
+    %% Decision flow for data loader
+    LocalCache -.->|"Cache Hit"| DataLoader
+    CDN -.->|"Cache Miss"| DataLoader
+    
+    %% Styling
     classDef apiEndpoint fill:#e1f5fe
     classDef model fill:#f3e5f5
     classDef infrastructure fill:#e8f5e8
     classDef external fill:#fff3e0
+    
+    class AggregatesAPI,PatternsAPI apiEndpoint
+    class LinkModel,SpeedRecordModel model
+    class ORM,Database,DataLoader infrastructure
+    class Client,CDN,LocalCache external
 ```
 
 
